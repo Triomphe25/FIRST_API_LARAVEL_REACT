@@ -1,18 +1,31 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
+import Loader  from '../../shared/components/loader';
 
 export default function Film() {
     const [films, setFilms] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     const moviesRequest = async () => {
         try {
-            const res = await axios.get(import.meta.env.VITE_BACKEND_URL);
-            setFilms(res.data.films || []); // S'assurer que c'est toujours un tableau
-            setLoading(false);
+            // Vérification que la variable d'environnement existe
+            const backendUrl = import.meta.env.VITE_BACKEND_URL;
+            if (!backendUrl) {
+                throw new Error('URL backend non configurée');
+            }
+
+            const res = await axios.get(`${backendUrl}/films`);
+            
+            // Gestion robuste des données
+            const filmsData = res.data?.films || res.data || [];
+            setFilms(Array.isArray(filmsData) ? filmsData : []);
+            
         } catch (error) {
             console.error('Erreur:', error);
-            setFilms([]); // Définir un tableau vide en cas d'erreur
+            setError(error.message);
+            setFilms([]);
+        } finally {
             setLoading(false);
         }
     }
@@ -21,21 +34,22 @@ export default function Film() {
         moviesRequest();
     }, []);
 
-    // Afficher un loading pendant le chargement
-    if (loading) {
-        return <div>Chargement...</div>;
-    }
+    if (loading) return <div>
+        
+
+        <Loader/>
+
+    </div>;
+    if (error) return <div>Erreur: {error} <p>FILM({films.length})</p></div>;
 
     return (
-        <div>
-            Film {films?.length} {/* Optional chaining pour sécurité */}
-            <p> vonnfnnfn</p>
+        <div style={{ padding: '20px' }}>
+            <h2>Films ({films.length})</h2>
             
-            {/* Afficher les films */}
-            {films?.map(film => (
-                <div key={film.id}>
-                    <h3>{film.title}</h3>
-                    <p>{film.description}</p>
+            {films.map(film => (
+                <div key={film.id} style={{ border: '1px solid #ccc', padding: '15px', margin: '10px 0' }}>
+                    <h3>{film.titre || 'Sans titre'}</h3>
+                    <p>{film.description || 'Aucune description'}</p>
                 </div>
             ))}
         </div>

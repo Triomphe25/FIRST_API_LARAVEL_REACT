@@ -9,7 +9,14 @@ function App() {
 
   return (
    <div className='App'>
-      
+      <div className="App-container">
+        <div className="topnav">
+          <a href="# ">Accueil</a>
+          <a href="# ">Films</a>
+          <a href="# ">Series</a>
+        </div>
+      </div>
+
       <Film/>
    </div>
   );
