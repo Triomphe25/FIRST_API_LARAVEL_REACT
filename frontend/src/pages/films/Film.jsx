@@ -1,8 +1,13 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import Loader  from '../../shared/components/loader';
+import Loader from '../../shared/components/loader';
+import './film.css'
+import { useNavigate } from 'react-router-dom';
 
 export default function Film() {
+
+    let navigate = useNavigate();
+
     const [films, setFilms] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -16,11 +21,11 @@ export default function Film() {
             }
 
             const res = await axios.get(`${backendUrl}/films`);
-            
+
             // Gestion robuste des données
             const filmsData = res.data?.films || res.data || [];
             setFilms(Array.isArray(filmsData) ? filmsData : []);
-            
+
         } catch (error) {
             console.error('Erreur:', error);
             setError(error.message);
@@ -35,23 +40,35 @@ export default function Film() {
     }, []);
 
     if (loading) return <div>
-        
 
-        <Loader/>
+
+        <Loader />
 
     </div>;
     if (error) return <div>Erreur: {error} <p>FILM({films.length})</p></div>;
 
     return (
-        <div style={{ padding: '20px' }}>
-            <h2>Films ({films.length})</h2>
-            
-            {films.map(film => (
-                <div key={film.id} style={{ border: '1px solid #ccc', padding: '15px', margin: '10px 0' }}>
-                    <h3>{film.titre || 'Sans titre'}</h3>
-                    <p>{film.description || 'Aucune description'}</p>
-                </div>
-            ))}
+        <div className='page-container'>
+            <div className="section">
+                Total des films disponible: <span>{films.length}</span>
+            </div>
+            <div className="movies-container">
+
+                {films.map(({ id, titre, url, description }) => (
+                    <div key={id} className='movies-card' onClick={()=>navigate(`films/${id}`)}>
+                        <div className="img-container">
+                             <img src={`photo/${url}`} alt={titre || 'Film'} />
+                        </div>
+                        <div className="details">
+                            <h3>{titre || 'Sans titre'}</h3>
+                            <p>{description.substring(0, 150) || 'Aucune description'}</p>
+
+                        </div>
+
+                    </div>
+                ))}
+
+            </div>
         </div>
     );
 }
