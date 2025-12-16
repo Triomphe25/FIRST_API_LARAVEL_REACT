@@ -4,6 +4,9 @@ import Serie from '../series/serie';
 import Details from '../films/Details';
 
 import Film from '../films/Film';
+import Login from '../Auth/Login';
+import Register from '../Auth/Register';
+
 
 export default function Navigation() {
   return (
@@ -18,6 +21,8 @@ export default function Navigation() {
           <Route path='/' element={<Film/>}/>
           <Route path='/films/:id' element={<Details/>}/>
           <Route path='/series' element={<Serie/>}/>
+          <Route path='/login' element={<Login/>}/>
+          <Route path='/register' element={<Register/>}/>
         </Routes>
     </>
   )
